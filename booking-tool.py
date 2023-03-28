@@ -46,8 +46,8 @@ def load_config():
 config = load_config()
 
 try:
-    LAB_INFO=config['LAB_INFO']
-    LAB_NAMES=list(config['LAB_INFO'].keys())
+    RESOURCE_INFO=config['RESOURCE_INFO']
+    LAB_NAMES=list(config['RESOURCE_INFO'].keys())
     DB_FILE=config['DB_FILE']
     PORT=config['PORT']
     HOST=config['HOST']
@@ -390,7 +390,7 @@ def calendar():
                 'start': start,
                 'end': end,
                 'description': title,
-                'color': LAB_INFO[lab_name]
+                'color': RESOURCE_INFO[lab_name]
                 }]
         else:
             bookings.append({
@@ -399,7 +399,7 @@ def calendar():
                'start': start,
                'end': end,
                'description': title,
-               'color': LAB_INFO[lab_name]
+               'color': RESOURCE_INFO[lab_name]
               })
 
         # Write updated bookings to JSON file
