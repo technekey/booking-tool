@@ -1,0 +1,22 @@
+{
+    "LAB_INFO": {
+        "Cluster-1": "blue",
+        "Cluster-2": "green",
+        "Cluster-3": "red",
+        "Cluster-4": "gray",
+	"Cluster-5": "yellow"
+    },
+    "DB_FILE": "./bookings.db.json",
+    "USER_DB": "./users_info.db.json",
+    "LOG_FILE": "login.logs",
+    "ADMIN_INFO": "admins.db.json",
+    "HOST": "0.0.0.0",
+    "PORT": "8080",
+    "TZ": "CST",
+    "REGISTRATION_ALLOWED": true,
+    "ALLOWED_DOMAINS": ["bar.com","zoo.com"],
+    "TITLE": "Resource Reservation Page",
+    "FOOTER_MESSAGE": "For User registration, please email at admin@foobar.com",
+    "RESOURCE_NAME": "Kubernetes Cluster"
+    
+}

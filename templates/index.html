@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head> 
+
+    <header>
+      <h2>{{ title }}</h2>
+      <! -- The below code, will conditionally show login, registration headers etc, based on certain conditions -->
+      <! -- All these conditions are validated at backend too! -->
+      {% if authenticated and not admin -%}
+          <p class="welcome"> Welcome {{ username }}</p>
+          <a href="/">Home</a> <a href="{{ url_for('logout') }}">Logout</a>
+      {% elif authenticated and admin -%}
+          <p class="welcome"> Welcome {{ username }}</p>
+          <a href="/">Home</a> <a href="{{ url_for('logout') }}">Logout</a>
+          <a href="{{ url_for('register') }}">Registration override</a>
+          <a href="{{ url_for('delete_user_list') }}">Delete Users</a>
+          
+      {% else -%}
+          <a href="/">Home</a>
+          <a href="{{ url_for('login') }}">Login</a>
+          {% if reg_open -%}
+              <a href="{{ url_for('register') }}">Register</a>
+          {% endif -%}
+      {% endif -%}
+    </header>
+
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        // Initialize datetimepickers
+        $('input[name="start_date_time"], input[name="end_date_time"]').datetimepicker({
+          format: 'Y-m-d H:i',
+          minDate: 0, // disables past dates
+//          timeZone: 'America/Chicago',
+	  //minTime: 0
+           });
+
+          $('#calendar').fullCalendar({
+    header: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'month,agendaWeek,agendaDay'
+    },
+    defaultView: 'month',
+    slotLabelInterval: '01:00',
+    slotDuration: '01:00:00',
+    minTime: '00:00:00',
+    maxTime: '24:00:00',
+    editable: true,
+    events: '/bookings',
+    contentHeight: 'auto',
+   // timezone: 'America/Chicago',
+    aspectRatio: 1.5,
+
+  eventClick: function(event) {
+  //var start = new Date(event.start).toLocaleString();
+  //var end = new Date(event.end).toLocaleString();
+  var start = new Date(event.start).toLocaleString('en-US', { timeZone: 'UTC' });
+  var end = new Date(event.end).toLocaleString('en-US', { timeZone: 'UTC' }); 
+  
+  var authenticated = {{ authenticated|tojson }};
+  if (authenticated) {
+    var tz = "{{ tz }}";
+
+    if (confirm("Are you sure you want to delete this event?,\n{{ resource_name }}: " + event.title + ',\nFrom: ' + start + ' ' + tz + ' '  + '\nTo: ' + end + ' ' + tz + ' ' +  '\nDescription: ' + event.description)) {
+      $.ajax({
+        url: '/delete_event',
+        type: 'POST',
+        data: {
+          'id': event._id,
+          'title': event.title,
+          'start': event.start.format(),
+          'end': event.end.format(),
+          'description': event.description
+        },
+        success: function(response) {
+          alert(response);
+        },
+        error: function(xhr) {
+          alert("An error occurred: " + xhr.status + " " + xhr.statusText);
+        }
+      });
+      $('#calendar').fullCalendar('removeEvents', event._id);
+      refreshPage();
+    }
+  } else {
+    alert("You must be logged in to delete events.\n" + event.title + ',\nFrom: ' + start + ' ' + tz + ' ' + '\nTo: ' + end + ' ' + tz + ' ' + '\nDescription: ' + event.description);
+  }
+}
+		    
+  });	
+      });
+
+        function refreshPage() {
+           location.reload();
+           console.log('Calendar refreshed!');
+        }
+ 
+        function toggleSharedWith() {
+          var sharableCheckbox = document.getElementById('sharable');
+          var sharedWithInput = document.getElementById('shared_with');
+
+          if (sharableCheckbox.checked) {
+             sharedWithInput.disabled = false;
+          }  else {
+            sharedWithInput.disabled = true;
+          }
+          }
+//    if (!authenticated) {
+//        const submitButton = document.getElementById('submitButton');
+//        submitButton.disabled = true;
+//    }
+
+    </script>
+    <style>
+      form {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding-top: 20px;
+
+      }
+
+      label {
+        flex: 1 0 30%;
+        margin-bottom: 10px;
+      }
+
+      input[type="text"],
+      select,
+      input[type="datetime-local"],
+      input[type="checkbox"] {
+        flex: 1 0 60%;
+        margin-bottom: 10px;
+        padding: 5px;
+      }
+
+      input[type="submit"] {
+        flex-basis: 100%;
+      }
+      footer {
+       text-align: center;
+       background-color: #f5f5f5;
+       padding: 5px;
+       position: static;
+       bottom: 0;
+       width: 100%;
+      } 
+      header {
+        position: static;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #333;
+        color: #fff;
+        padding: 1px;
+        display: flex; /* use flexbox */
+        justify-content: space-between; /* align items to the left and right edges */
+        align-items: center; /* vertically center the items */
+        flex-wrap: nowrap; /* prevent the content from wrapping */
+      }
+
+      header h2 {
+        margin: 0; /* remove default margin */
+      }
+
+      header a {
+        color: #fff;
+        text-decoration: none;
+        margin-left: 10px; /* add some space between links */
+      } 
+    </style>
+  </head>
+<body>
+ {% with messages = get_flashed_messages() %}
+   {% if messages %}
+      <ul class="flashes">
+        <li>{{ messages[0] }}</li>
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% if error %}
+      <div id="error-message">{{ error }}</div>
+  {% endif %}
+
+  <div style="display: flex; justify-content: center; flex-direction: column; align-items: center;">
+    <form method="POST" action="/bookings" style="display: flex; justify-content: center; flex-wrap: wrap;">
+      <div style="display: flex; flex-direction: column; margin: 0 10px;">
+        <label>User ID:</label>
+        <input type="text" name="user_id"  required value="{{ username }}" {% if authenticated and admin %} {% else %} readonly {% endif %}>
+
+      </div>
+      <div style="display: flex; flex-direction: column; margin: 0 10px;">
+        <label>{{ resource_name }}:</label>
+        <select name="lab_name" id="lab_name" required>
+          {% for lab_name in lab_names %}
+          <option value="{{ lab_name }}">{{ lab_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div style="display: flex; flex-direction: column; margin: 0 10px;">
+        <label>Start Date and Time({{ tz }}):</label>
+        <input type="text" name="start_date_time" class="datetimepicker" required>
+      </div>
+      <div style="display: flex; flex-direction: column; margin: 0 10px;">
+        <label>End Date and Time({{ tz }}):</label>
+        <input type="text" name="end_date_time" class="datetimepicker" required>
+      </div>
+      <div style="display: flex; flex-direction: column; margin: 0 10px;">
+        <label>Sharable:</label>
+        <input type="checkbox" name="sharable" id="sharable" value="yes" onclick="toggleSharedWith()">
+      </div>
+      <div style="display: flex; flex-direction: column; margin: 0 10px;">
+        <label>Shared with:</label>
+        <input type="text" name="shared_with" id="shared_with" disabled>
+      </div>
+      <div style="display: flex; flex-direction: column; margin: 0 10px;">
+      <div id="error-message" style="display:none"></div>
+
+       <input type="submit" name="submitButton" value="Book" {% if not authenticated %}disabled{% endif %}>
+      </div>
+    </form>
+  </div>
+  <div id="calendar"></div>
+</body>
+<footer>
+  <p>{{ footer_msg }}</p>
+</footer>
+
+</html>

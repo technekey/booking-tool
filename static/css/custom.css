@@ -1,0 +1,51 @@
+input[type="datetime-local"] {
+  margin-bottom: 10px;
+}
+
+#calendar {
+  margin-top: 50px;
+}
+
+/*
+.form-field {
+  margin-left: 80px;
+  padding-top: 10px;
+}
+*/
+
+.form-field {
+    width: 50%;
+    padding: 10px;
+    margin: 5px;
+    font-size: 16px;
+}
+
+/* Change the header color of the calendar */
+.fc-header-toolbar {
+  background-color: #ef8354;
+}
+
+/* Change the text color of the calendar events */
+.fc-event {
+  color: white;
+}
+
+/* Change the background color of the calendar events */
+.fc-event {
+  background-color: #26547c;
+}
+
+/* Add a border to the calendar events */
+.fc-event {
+  border: 2px solid white;
+}
+
+/* Change the background color of the selected calendar date */
+.fc-day-number.fc-today {
+  background-color: #ef8354;
+}
+
+/* Change the background color of the hovered calendar date */
+.fc-day:hover {
+  background-color: #f4a261;
+}

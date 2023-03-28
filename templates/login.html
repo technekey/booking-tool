@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+	<title>Login Page</title>
+  <style>
+    .error {
+      color: red;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    footer {
+       text-align: center;
+       background-color: #f5f5f5;
+       padding: 5px;
+       position: static;
+       bottom: 0;
+       width: 100%;
+      }
+    header {
+        position: static;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #333;
+        color: #fff;
+        padding: 1px;
+        display: flex; /* use flexbox */
+        justify-content: space-between; /* align items to the left and right edges */
+        align-items: center; /* vertically center the items */
+        flex-wrap: nowrap; /* prevent the content from wrapping */
+      }
+
+      header h2 {
+        margin: 0; /* remove default margin */
+      }
+
+      header a {
+        color: #fff;
+        text-decoration: none;
+        margin-left: 10px; /* add some space between links */
+      }
+
+
+  </style>
+
+</head>
+
+<body>
+<header>
+      <h2>{{ title }}</h2>
+      {% if authenticated and not admin -%}
+          <p class="welcome"> Welcome {{ username }}</p>
+          <a href="/">Home</a> <a href="{{ url_for('logout') }}">Logout</a>
+      {% elif authenticated and admin -%}
+          <p class="welcome"> Welcome {{ username }}</p>
+          <a href="/">Home</a> <a href="{{ url_for('logout') }}">Logout</a> <a href="{{ url_for('register') }}">Registration override</a>
+      {% else -%}
+          <a href="/">Home</a> <a href="{{ url_for('login') }}">Login</a> {% if reg_open %} <a href="{{ url_for('register') }}">Register</a>{%endif%}
+      {% endif -%}
+
+</header>
+<div class="flash-container">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flashes">
+        <li>{{ messages[0] }}</li>
+      </ul>
+    {% endif %}
+  {% endwith %}
+</div>
+
+	<h1>Login Page</h1>
+	<form action="/login" method="POST">
+		<label for="username">Username(Email):</label>
+		<input type="text" id="username" name="username"><br><br>
+		<label for="password">Password:</label>
+		<input type="password" id="password" name="password"><br><br>
+		<input type="submit" value="Login">
+	</form>
+</body>
+</html>
